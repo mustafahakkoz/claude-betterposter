@@ -1,7 +1,7 @@
 {
   "name": "betterposter",
   "displayName": "betterposter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Build and verify print-ready A0/A1/A2 scientific posters in LaTeX with the #betterposter format.",
   "author": {
     "name": "Mustafa Abdullah Hakkoz",

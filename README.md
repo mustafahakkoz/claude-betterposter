@@ -75,17 +75,45 @@ python3 -m pip install Pillow
 Tectonic is a Homebrew *formula*, so it installs without `sudo`. A local TeX Live
 works too: `make pdf TEX=latexmk`.
 
+## Credits
+
+**The #betterposter format is Mike Morrison's.** The idea — one main finding readable
+at three metres, supporting detail demoted to a sidebar and a QR code — is his, along
+with the original PowerPoint template and the [talk that started it](https://osf.io/ef53g/).
+Nothing here improves on that design; this repository only automates building and
+checking one.
+
+The LaTeX lineage, all of it other people's work:
+
+| | |
+|---|---|
+| **Mike Morrison** ([@mikemorrison](https://twitter.com/mikemorrison)) | the #betterposter design and the original PowerPoint template |
+| **Rafael Bailo** ([betterposter-latex-template](https://github.com/rafaelbailo/betterposter-latex-template)) | the landscape LaTeX port, `betterposter.cls`, GPL-3.0 |
+| **Daniel Bradford** ([Overleaf](https://www.overleaf.com/latex/templates/better-portrait-poster-template/rnfzsnvbhxgr)) | the portrait adaptation this skill targets, `betterportraitposter.cls` |
+
+The `.cls` header names all three. Keep it intact when you vendor the file.
+
+This repository contributes only the layer around them: the measurements, the twelve
+documented failure modes, the verification scripts and the Claude Code automation.
+The class itself is neither bundled nor modified here.
+
 ## Licence
 
-This skill is **MIT**. See [LICENSE](LICENSE).
+This skill — the starter `main.tex`, both scripts, the Makefile and all the prose — is
+**MIT**. See [LICENSE](LICENSE). None of it is derived from the poster class.
 
-**The `betterportraitposter` class is GPL-3.0 and is _not_ bundled here.** The skill
-tells you to fetch it from
-[machml/Better-Portrait-Scientific-Poster-Template](https://github.com/machml/Better-Portrait-Scientific-Poster-Template)
-and vendor it into your own project. Nothing in this repository is derived from it —
-the starter `main.tex`, the scripts and the prose are all original. Note that several
-sources describe that class as CC BY 4.0; line 2 of the `.cls` header says GPL-3.0,
-and there is no `LICENSE` file upstream.
+**The `betterportraitposter` class is not bundled**, deliberately. The skill tells you
+to `curl` it into your own project instead. Line 2 of the `.cls` header says
+**GNU GPL-3.0**, as does Bailo's landscape class that it is built on; the Overleaf
+listing for the same template records CC BY 4.0. The two disagree. The header travels
+with the file you actually vendor, so treat the class as GPL-3.0 and say so in your
+poster's README.
+
+Bradford has no public GitHub repository, so the skill fetches the class from
+[machml/Better-Portrait-Scientific-Poster-Template](https://github.com/machml/Better-Portrait-Scientific-Poster-Template),
+a third-party re-upload carrying no `LICENSE` file. The
+[Overleaf template page](https://www.overleaf.com/latex/templates/better-portrait-poster-template/rnfzsnvbhxgr)
+is the canonical source.
 
 ## Contributing
 

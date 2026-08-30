@@ -7,6 +7,13 @@
 Use **`betterportraitposter`** (Bradford / Bailo / Morrison). The reason is specific:
 `\documentclass[a0paper]` produces **native A0**.
 
+The format itself is **Mike Morrison's** #betterposter (https://osf.io/ef53g/). The
+LaTeX chain is his design → Rafael Bailo's landscape port `betterposter.cls`
+(https://github.com/rafaelbailo/betterposter-latex-template) → Daniel Bradford's
+portrait adaptation `betterportraitposter.cls`. The `.cls` header names all three;
+**keep that header intact** when you vendor the file, and credit Morrison in any
+write-up of the poster.
+
 There is a second LaTeX port of #betterposter — Lana Sinapayen's `better_poster.sty`
 (`a4paper` plus 4× enlargement at print time). **Evaluated and rejected:** it upscales
 raster images 4× and softens them, and it introduces a "print at 400%" step that is
@@ -15,9 +22,11 @@ and do not design a scaling workaround.
 
 ### Licence
 
-**GNU GPL-3.0.** Line 2 of the `.cls` header states it; the upstream repo has no
-`LICENSE` file (404). Some sources say CC BY 4.0 — that is **wrong**. Put GPL-3.0 in
-your README.
+**GNU GPL-3.0.** Line 2 of the `.cls` header states it, and Bailo's landscape class
+that it is built on is GPL-3.0 too. The Overleaf listing for the same template records
+**CC BY 4.0**, and the GitHub re-upload has no `LICENSE` file (404) — so the two
+published claims genuinely disagree. The header travels with the file you actually
+vendor, so treat it as GPL-3.0 and put that in your README.
 
 The template has not been updated in years. Expect no upstream fixes; the class is
 self-sufficient but you will be patching its behaviour yourself (`class-traps.md`).
@@ -25,7 +34,10 @@ self-sufficient but you will be patching its behaviour yourself (`class-traps.md
 ### Vendoring
 
 `betterportraitposter.cls` is **not** a CTAN package. Commit it to the repo so the
-build does not depend on the TeX distribution:
+build does not depend on the TeX distribution. Bradford has no public GitHub
+repository; the canonical source is the Overleaf template page
+(https://www.overleaf.com/latex/templates/better-portrait-poster-template/rnfzsnvbhxgr)
+and the URL below is a third-party re-upload of the same file:
 
 ```bash
 curl -sL https://raw.githubusercontent.com/machml/Better-Portrait-Scientific-Poster-Template/master/betterportraitposter.cls \
@@ -121,5 +133,6 @@ Commit the scaffold before writing content — layout work is experimental and y
 want clean reverts. Keep sizing decisions in `figures/*.tex` and placement in
 `main.tex` so diffs stay readable.
 
-README should record: the class licence (GPL-3.0), the licence and source of every
-third-party asset, and the build command.
+README should record: the class licence (GPL-3.0), credit to Mike Morrison for the
+#betterposter format and to Bailo/Bradford for the LaTeX port, the licence and source
+of every third-party asset, and the build command.
