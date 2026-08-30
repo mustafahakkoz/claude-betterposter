@@ -1,0 +1,19 @@
+{
+  "name": "mustafahakkoz",
+  "owner": {
+    "name": "Mustafa Abdullah Hakkoz",
+    "url": "https://github.com/mustafahakkoz"
+  },
+  "description": "Claude Code plugins by Mustafa Abdullah Hakkoz.",
+  "plugins": [
+    {
+      "name": "betterposter",
+      "source": "./",
+      "description": "Build and verify print-ready A0/A1/A2 scientific posters in LaTeX with the #betterposter format. Documents twelve silent failure modes of the betterportraitposter class and ships tested verification scripts.",
+      "version": "1.0.0",
+      "license": "MIT",
+      "category": "writing",
+      "keywords": ["latex", "poster", "betterposter", "conference", "a0", "print"]
+    }
+  ]
+}

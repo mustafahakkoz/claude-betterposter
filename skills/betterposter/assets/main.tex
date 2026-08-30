@@ -1,0 +1,258 @@
+% =====================================================================
+%  #betterposter starter — betterportraitposter (GPL-3.0)
+%
+%  Every workaround below is here because the class fails SILENTLY without
+%  it. Numbered references point at references/class-traps.md.
+%
+%  Build:  make pdf        Verify:  make check
+% =====================================================================
+
+% [trap 13] The class does a bare \RequirePackage{xcolor}, so passing options
+% with \usepackage[dvipsnames]{xcolor} later is an option clash. Options must
+% arrive BEFORE \documentclass.
+\PassOptionsToPackage{dvipsnames}{xcolor}
+\documentclass[a0paper,fleqn]{betterportraitposter}
+
+% --- Fonts -----------------------------------------------------------
+% [trap 1] The class loads cmbright, then lato[default] (which pulls in
+% fontspec => TU encoding), then [T1]{fontenc}. Under XeTeX that leaves
+% TU/cmbr undefined and everything falls back to Latin Modern Sans, with
+% only a warning. The compile still exits 0. Re-assert the font explicitly.
+%
+% A CLEAN COMPILE DOES NOT PROVE THE FONTS RESOLVED — `make check-fonts` does.
+\usepackage{fontspec}
+\setsansfont{Lato}[
+  Extension      = .ttf,
+  UprightFont    = *-Regular,
+  ItalicFont     = *-Italic,
+  BoldFont       = *-Bold,
+  BoldItalicFont = *-BoldItalic,
+]
+\renewcommand{\familydefault}{\sfdefault}
+
+% Weight contrast is cheaper than size contrast. Lato ships nine weights, so
+% the main finding can set Light against Black — a three-step jump that makes
+% the connective text recede and the emphasised terms carry the weight.
+%
+% [trap 2] Ligatures=TeX is NOT inherited by \newfontfamily. Without it,
+% apostrophes print as straight typewriter quotes and -- stays two hyphens.
+\newfontfamily\displayfont{Lato}[
+  Extension   = .ttf,
+  UprightFont = *-Light,
+  BoldFont    = *-Black,
+  Ligatures   = TeX,
+]
+
+\usepackage[none]{hyphenat}   % no hyphenation in display type
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+% [trap 12] The class defines \qrcode with a different signature (it places
+% two ready-made images). Park it, then hand the name to the package, which
+% generates a code from a URL at build time.
+% \let ...\relax suffices: LaTeX's \@ifdefinable permits redefining \relax.
+\let\qrcodebox\qrcode
+\let\qrcode\relax
+\usepackage{qrcode}
+
+% --- Palette ---------------------------------------------------------
+% MEASURE the contrast before committing; a colour's name guarantees nothing.
+% PineGreen is a BRIGHT green: 2.47:1 against white, below even the 3:1
+% large-text floor. Darkening keeps the hue identity.
+%     python3 scripts/contrast.py --mix 'PineGreen!65!black'
+% and then, after the first build, check what actually rendered:
+%     python3 scripts/contrast.py --sample main.pdf
+\colorlet{postercolor}{PineGreen!65!black}
+
+% [class] all four already exist, so \renewcommand — \newcommand errors.
+\renewcommand{\maincolumnbackgroundcolor}{postercolor}
+\renewcommand{\maincolumnfontcolor}{white}
+\renewcommand{\columnbackgroundcolor}{white}
+\renewcommand{\columnfontcolor}{black}
+
+% --- Metrics ---------------------------------------------------------
+% [trap 10] \bottomboxheight below the class's 0.1 default. With margin=0in
+% the page finishes ~1 mm short of full and the residual glue spills onto a
+% second, INKLESS page. Shrink the box; never add negative space at the end,
+% because \bottombox starts with \vfill and will simply stretch further,
+% pushing the footer off the page edge.
+\setlength{\mainfindingheight}{0.24\paperheight}
+\setlength{\bottomboxheight}{0.085\paperheight}
+
+% [trap 3] \fontsizemain ships as 116/220 — a 190% leading that puts ~70 mm
+% between two display lines and pushes the first one off the top of the page.
+\renewcommand{\fontsizemain}{\fontsize{116}{132}\selectfont}
+% Keep the byline below the title hierarchy: 48 pt is \fontsizesection.
+\renewcommand{\fontsizeauthor}{\fontsize{42}{52}\selectfont}
+
+% [trap 11] \section prepends \vspace{2em} = 34 mm at 48 pt. Four headings
+% would spend 136 mm a figure-heavy poster does not have.
+% [trap 8] \leavevmode so the heading is a box, not a whatsit.
+\renewcommand{\section}[1]{%
+  \vspace{0.7em}{\fontsizesection\selectfont\textbf{\leavevmode #1}}\\[0.25em]}
+
+% --- Helpers ---------------------------------------------------------
+% Uniform figure spacing. \begin{center} is a trivlist and adds \topsep both
+% above AND below; a bare tikzpicture adds nothing. Normalise every wrapper to
+% {\centering ...\par} and control the gap from here alone.
+\newcommand{\figgap}{\par\vspace{\baselineskip}}
+\newcommand{\figcap}[2][0.3em]{\par\vspace{#1}%
+  {\fontsize{26}{31}\selectfont\color{black!62}\raggedright #2\par}\vspace{0.5em}}
+
+% [trap 12] \color{black} and the white background are the difference between
+% a working code and an empty rectangle: \bottombox sets \color{white}, so the
+% package would draw white modules on white while the log still reports success.
+\newcommand{\posterqr}[2]{%
+  \begin{minipage}[c]{0.13\textwidth}%
+    {\setlength{\fboxsep}{5mm}\colorbox{white}{%
+       \color{black}\qrcode[height=0.6\bottomboxheight]{#1}}}%
+  \end{minipage}%
+  \begin{minipage}[c]{0.16\textwidth}%
+    \fontsize{34}{40}\selectfont\raggedright #2%
+  \end{minipage}%
+}
+
+% [trap 8] minipage[t] is a \vtop and takes its height from the FIRST BOX; a
+% leading \color is a whatsit, so the column silently drops one line.
+\newcommand{\authorcol}[4]{%
+  \begin{minipage}[t]{#1}\centering
+    \leavevmode\color{#4}#2\par\vspace{0.28em}
+    {\fontsize{34}{42}\selectfont#3\par}%
+  \end{minipage}}
+
+\begin{document}
+
+% =====================================================================
+%  MAIN FINDING — one sentence, jargon-free, readable at 3 m.
+%  Someone reading ONLY the bold words must get the finding.
+% =====================================================================
+% The class wraps \mainfinding's argument in tabular{p{0.9\textwidth}}, so \\
+% there is a ROW break, not a line break. An inner minipage restores normal
+% paragraph behaviour and is easier to control.
+\mainfinding{%
+  \begin{minipage}{\linewidth}
+    \centering\displayfont
+    % [trap 4] the \par lives INSIDE the size group: \baselineskip is read at
+    % \par time, so closing the group first would set these lines on the
+    % OUTER leading.
+    {\fontsize{116}{128}\selectfont
+     \textbf{SIX WORDS THAT}\\
+     % Hanging punctuation keeps two centred lines optically aligned.
+     \textbf{STOP A PASSER-BY}\rlap{\textbf{.}}\par}
+    \vspace{0.7em}
+    {\fontsize{64}{92}\selectfont
+     One sentence saying what you found. Bold the \textbf{two or three terms}
+     that carry it, and bold \textbf{both sides} of any contrast --- one-sided
+     contrast does not read at a glance.\par}
+  \end{minipage}%
+}
+
+% =====================================================================
+%  TITLE
+% =====================================================================
+\titlebox{%
+  {\centering
+   {\fontsizetitle\selectfont\textbf{Full Paper Title, Exactly As Published}\par}
+   \vspace{0.6em}
+   {\fontsizeauthor
+    % Underlining the presenting author is the conference convention, so it
+    % carries meaning. An icon must be interpreted and drags an icon font in.
+    \authorcol{0.30\linewidth}{\underline{First Author}}{Institution}{\institutefontcolor}%
+    \hspace{0.02\linewidth}%
+    \authorcol{0.30\linewidth}{Second Author}{Institution}{\institutefontcolor}%
+    \hspace{0.02\linewidth}%
+    \authorcol{0.30\linewidth}{Third Author}{Institution}{\institutefontcolor}%
+    \par}
+   \par}%
+}
+
+% =====================================================================
+%  BODY — 3 short blocks, then a full-width results band.
+%  Total visible prose across the whole poster: 150-250 words.
+% =====================================================================
+\centerbox{%
+  \begin{multicols}{3}
+
+    \section{Where}
+    Roughly 35 words. Say what the data is and where it came from. Cutting a
+    block entirely beats compressing all three.
+    \figgap
+    % Every figure wrapper opens the same way — no \begin{center}.
+    {\centering\begin{tikzpicture}[x=1mm,y=1mm]
+       \fill[postercolor!20] (0,0) rectangle (60,40);
+       \node at (30,20) {\fontsize{26}{26}\selectfont figure};
+     \end{tikzpicture}\par}
+    \figcap{A caption gives what neither the figure nor the text gives alone.}
+
+    \columnbreak
+
+    \section{When}
+    Roughly 35 words. The method, in plain language. No equations --- they do
+    not survive being read at two metres.
+    \figgap
+    {\centering\begin{tikzpicture}[x=1mm,y=1mm]
+       \fill[postercolor!40] (0,0) rectangle (60,40);
+       \node at (30,20) {\fontsize{26}{26}\selectfont figure};
+     \end{tikzpicture}\par}
+    \figcap{For a method figure, the best caption is an analogy.}
+
+    \columnbreak
+
+    \section{How}
+    Roughly 30 words. Inputs and output, stated explicitly. Name the baselines
+    you compare against.
+    \figgap
+    {\centering\begin{tikzpicture}[x=1mm,y=1mm]
+       \fill[postercolor!60] (0,0) rectangle (60,40);
+       \node[white] at (30,20) {\fontsize{26}{26}\selectfont figure};
+     \end{tikzpicture}\par}
+    % No math mode and no \texttt here on purpose: either one pulls an
+    % undeclared family into the PDF (cmbright math, Latin Modern Mono) and
+    % `make check-fonts` will correctly flag it as a fallback.
+    \figcap{Rasters need 120 ppi or better at the size they are placed.}
+
+  \end{multicols}
+
+  % [trap 6] The full-width band lives INSIDE this same \centerbox, after
+  % \end{multicols}. A second \centerbox would draw a second horizontal rule.
+  \section{So what}
+  % [trap 7] [b] aligns LAST baselines. [t] aligns FIRST baselines, which for
+  % two different content types leaves one sitting tens of mm below the other
+  % and inflates the whole band.
+  \begin{minipage}[b]{0.63\textwidth}
+    {\centering\begin{tikzpicture}[x=1mm,y=1mm]
+       \fill[postercolor!15] (0,0) rectangle (140,70);
+       \node at (70,35) {\fontsize{30}{30}\selectfont results figure};
+     \end{tikzpicture}\par}
+  \end{minipage}\hfill
+  \begin{minipage}[b]{0.30\textwidth}
+    {\centering\begin{tikzpicture}[x=1mm,y=1mm]
+       \fill[postercolor!15] (0,0) rectangle (65,65);
+       \node at (32,32) {\fontsize{30}{30}\selectfont second view};
+     \end{tikzpicture}\par}
+  \end{minipage}
+}
+
+% =====================================================================
+%  FOOTER
+% =====================================================================
+% [trap 5] \bottombox injects space on BOTH sides of its argument — 8.4 mm at
+% \fontsizesection's 48 pt. With \hfill already spending the slack, the content
+% overflows the right margin. The 0.97 minipage absorbs it.
+\bottombox{%
+  \begin{minipage}{0.97\linewidth}
+    \posterqr{https://example.org/paper}{Paper}%
+    \hfill
+    \posterqr{https://example.org/code}{Code}%
+    \hfill
+    % A dark logo vanishes on the coloured band — put logos on a white panel,
+    % which also matches the light ground the QR codes already need.
+    \begin{minipage}[c]{0.22\textwidth}\raggedleft
+      {\setlength{\fboxsep}{4mm}\colorbox{white}{%
+         % \includegraphics[height=0.5\bottomboxheight]{assets/logo.pdf}
+         \rule{0pt}{0.5\bottomboxheight}\textcolor{black}{\ \ logo\ \ }}}%
+    \end{minipage}
+  \end{minipage}%
+}
+
+\end{document}
