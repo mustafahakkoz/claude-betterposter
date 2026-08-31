@@ -112,8 +112,10 @@ gets them wrong.
 
 ## An example
 
-The poster above was built this way, from a single input: a 6-page IEEE paper on
-agricultural forecasting. The output is a native A0 PDF, 841 × 1189 mm, one page.
+The poster above was built this way, from a single input: [*Performance Improvement of
+Regional Agricultural Forecasts with PECNET and State-Space
+Model*](https://ieeexplore.ieee.org/abstract/document/10661077), a 6-page paper from
+Agro-Geoinformatics 2024. The output is a native A0 PDF, 841 × 1189 mm, one page.
 
 What the automation had to decide, and what it settled on:
 
@@ -124,8 +126,10 @@ What the automation had to decide, and what it settled on:
 | **The evidence** | one results table won on a countable claim ("5 of 6 regions") rather than an average |
 | **The detail** | two QR codes — the paper on IEEE Xplore, and the framework's repository |
 
-The example is not in this repository: the poster is a published paper's, and the
-paper PDF itself is under IEEE copyright.
+Neither file ships here — the paper is under IEEE copyright, and the poster is 4 MB
+that every install would otherwise download. The link above is the input if you want
+to read it, though Xplore paywalls the PDF for anyone without a subscription. To try
+the skill, point it at a paper of your own; that is what it is for.
 
 ## What's inside
 
