@@ -31,6 +31,32 @@ This repository is the machine that drives them.
 
 ## Install
 
+### Step 1 — the toolchain
+
+> [!IMPORTANT]
+> **Do this first.** Without them the skill still installs and still gives advice, but
+> it cannot build a PDF, and any check needing a missing tool stops with
+> `pdffonts not found — install with: brew install poppler`. Those checks are the
+> reason this exists.
+
+```bash
+brew install tectonic poppler zbar
+python3 -m pip install Pillow
+```
+
+| missing | what stops working |
+|---|---|
+| `tectonic` | building the PDF at all (a local TeX Live works too: `make pdf TEX=latexmk`) |
+| `poppler` | page size and count · embedded fonts · rendering the page for the QR scan |
+| `zbar` | whether the QR codes actually decode |
+| `Pillow` | figure resolution at the size each image is really placed |
+
+Tectonic is a Homebrew *formula*, so it lands in user-owned `/opt/homebrew` and needs
+**no `sudo`**. MacTeX and BasicTeX do need a root password and cannot be installed
+from an agent session at all.
+
+### Step 2 — the skill
+
 **As a plugin** (recommended — one command, and you get updates):
 
 ```
@@ -44,16 +70,6 @@ This repository is the machine that drives them.
 git clone https://github.com/mustafahakkoz/claude-betterposter.git
 ln -s "$PWD/claude-betterposter/skills/betterposter" ~/.claude/skills/betterposter
 ```
-
-You will also need a TeX engine and the two tools the checks use:
-
-```bash
-brew install tectonic poppler zbar
-python3 -m pip install Pillow
-```
-
-Tectonic is a Homebrew *formula*, so it installs without `sudo`. A local TeX Live
-works too.
 
 ## Use
 
